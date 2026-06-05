@@ -1,0 +1,9 @@
+yfinance
+pandas
+requests
+newsapi
+python-dotenv
+Pillow
+APScheduler
+instagrapi
+anthropic

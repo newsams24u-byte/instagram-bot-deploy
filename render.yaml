@@ -1,0 +1,16 @@
+# Deployment Configuration File for Render.com
+# This file tells Render how to deploy your app
+
+# Environment: Python
+runtime = "python-3.11"
+
+# Install dependencies
+install = "pip install -r requirements_deploy.txt"
+
+# Start command
+start = "gunicorn wsgi:app"
+
+# Pre-deployment build (create database)
+preBuild = [
+  "python -c 'from web_app import app, db; app.app_context().push(); db.create_all()'"
+]
