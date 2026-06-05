@@ -1,7 +1,7 @@
 # Deployment requirements - NO PILLOW (using text-only posts)
 Flask==2.3.0
 Flask-SQLAlchemy==3.0.0
-APScheduler==3.10.0
+APScheduler==3.10.4
 setuptools>=65.0.0
 instagrapi==2.0.0
 requests==2.31.0
