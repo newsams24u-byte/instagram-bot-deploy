@@ -1,7 +1,9 @@
+"""
+Simple image placeholder module - no Pillow required
+Uses text-only posts on Instagram (much cleaner!)
+"""
 import os
-from PIL import Image, ImageDraw, ImageFont
-import random
-from typing import Dict
+from typing import Dict, Optional
 
 class AdvancedImageCreator:
     def __init__(self, width: int = 1080, height: int = 1350):
@@ -9,6 +11,38 @@ class AdvancedImageCreator:
         self.height = height
         self.output_dir = "instagram_agent/posts"
         os.makedirs(self.output_dir, exist_ok=True)
+    
+    def create_image(self, content: Dict) -> Optional[str]:
+        """Text-only posts - no image needed!"""
+        return None
+    
+    def _create_news_image(self, content: Dict) -> Optional[str]:
+        return None
+    
+    def _create_weather_image(self, content: Dict) -> Optional[str]:
+        return None
+    
+    def _create_rain_image(self, content: Dict) -> Optional[str]:
+        return None
+    
+    def _create_traffic_image(self, content: Dict) -> Optional[str]:
+        return None
+    
+    def _create_metro_image(self, content: Dict) -> Optional[str]:
+        return None
+    
+    def _create_poll_image(self, content: Dict) -> Optional[str]:
+        return None
+    
+    def _create_meme_image(self, content: Dict) -> Optional[str]:
+        return None
+    
+    def _save_image(self, image, post_type: str) -> Optional[str]:
+        return None
+    
+    def _draw_text(self, draw, text: str, y_pos: int, color=(255, 255, 255), size=50):
+        pass
+
     
     def create_image(self, content: Dict) -> str:
         """Create image based on content type"""

@@ -1,6 +1,9 @@
-from PIL import Image, ImageDraw, ImageFont
+"""
+Simple image placeholder module - no Pillow required
+Uses text-only posts on Instagram
+"""
 import os
-from typing import Tuple
+from typing import Optional, Tuple
 
 class ImageCreator:
     def __init__(self, width: int = 1080, height: int = 1350):
@@ -9,12 +12,16 @@ class ImageCreator:
         self.output_dir = "instagram_agent/posts"
         os.makedirs(self.output_dir, exist_ok=True)
     
-    def create_post_image(self, title: str, subtitle: str = "", filename: str = None) -> str:
-        """Create an Instagram-ready image with title and subtitle"""
-        
-        # Create image with gradient-like background
-        image = Image.new('RGB', (self.width, self.height), color=(20, 20, 40))
-        draw = ImageDraw.Draw(image)
+    def create_post_image(self, title: str, subtitle: str = "", filename: str = None) -> Optional[str]:
+        """Text-only posts - no image generation needed"""
+        return None
+    
+    def _wrap_text(self, text: str, width: int):
+        return []
+    
+    def _add_decorations(self, draw):
+        pass
+
         
         # Add gradient effect (simulate with colored rectangles)
         for i in range(self.height):
