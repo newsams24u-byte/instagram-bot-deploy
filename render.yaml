@@ -1,8 +1,10 @@
-# Render service descriptor for Docker deployment
+# Render service descriptor - Native Python deployment
 services:
   - type: web
     name: instagram-bot
-    env: docker
+    env: python
     branch: main
-    # Dockerfile is auto-detected in the root directory
+    runtime: python-3.10
+    buildCommand: pip install --upgrade pip setuptools && pip install --only-binary :all: Pillow && pip install -r requirements_deploy.txt
+    startCommand: gunicorn wsgi:app --workers 2 --bind 0.0.0.0:5000 --timeout 60
     healthCheckPath: /
