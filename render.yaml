@@ -1,9 +1,8 @@
-# Render service descriptor
+# Render service descriptor for Docker deployment
 services:
   - type: web
     name: instagram-bot
     env: docker
     branch: main
-    dockerfilePath: ./Dockerfile
-    # optional: create DB tables after install
+    # Dockerfile is auto-detected in the root directory
     healthCheckPath: /

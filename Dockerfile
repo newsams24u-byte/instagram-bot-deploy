@@ -9,9 +9,12 @@ ENV PYTHONUNBUFFERED=1 \
 # Set working directory
 WORKDIR /app
 
-# Install system dependencies required for Pillow and other packages
+# Install system dependencies required for building packages
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
+    gcc \
+    g++ \
+    make \
+    libc-dev \
     libssl-dev \
     libffi-dev \
     && rm -rf /var/lib/apt/lists/*
@@ -19,19 +22,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Copy requirements first for better layer caching
 COPY requirements_deploy.txt .
 
-# Upgrade pip, setuptools, wheel and install Python dependencies
-RUN python -m pip install --upgrade pip setuptools wheel && \
+# Upgrade pip and setuptools, then install Python dependencies
+RUN pip install --upgrade pip setuptools wheel && \
     pip install -r requirements_deploy.txt
 
-# Copy application code
+# Copy application code (excluding files in .dockerignore)
 COPY . .
 
 # Create a non-root user to run the app
 RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
 USER appuser
 
-# Expose port 5000 (default Flask port, Render will map this)
+# Expose port 5000 (Render will map this internally)
 EXPOSE 5000
 
 # Start the application with gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "wsgi:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "2", "--timeout", "60", "wsgi:app"]
