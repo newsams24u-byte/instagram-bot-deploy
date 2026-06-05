@@ -1,9 +1,10 @@
-# Render service descriptor - Docker deployment (NO PILLOW!)
+# Render service descriptor - Native Python deployment (NO PILLOW!)
 services:
   - type: web
     name: instagram-bot
-    env: docker
+    env: python
     branch: main
-    dockerfilePath: ./Dockerfile
+    runtime: python-3.11
+    buildCommand: pip install --upgrade pip setuptools && pip install -r requirements_deploy.txt
     startCommand: gunicorn wsgi:app --workers 2 --bind 0.0.0.0:5000 --timeout 60
     healthCheckPath: /
