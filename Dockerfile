@@ -1,40 +1,53 @@
-# Use official Python 3.11 slim image (much smaller than full image)
-FROM python:3.11-slim
-
-# Set environment variables
-ENV PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1 \
-    PIP_NO_CACHE_DIR=1
+# Multi-stage build for optimal size
+FROM python:3.11-slim-bullseye as builder
 
 # Set working directory
-WORKDIR /app
+WORKDIR /build
 
-# Install system dependencies required for building packages
+# Install build dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     g++ \
     make \
-    libc-dev \
-    libssl-dev \
-    libffi-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements first for better layer caching
+# Copy requirements
 COPY requirements_deploy.txt .
 
-# Upgrade pip and setuptools, then install Python dependencies
+# Build wheels in isolated stage
 RUN pip install --upgrade pip setuptools wheel && \
-    pip install -r requirements_deploy.txt
+    pip wheel --no-cache-dir --no-deps --wheel-dir /build/wheels -r requirements_deploy.txt
 
-# Copy application code (excluding files in .dockerignore)
+# Final stage
+FROM python:3.11-slim-bullseye
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=1
+
+WORKDIR /app
+
+# Install only runtime dependencies (not build tools)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libssl3 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy wheels from builder
+COPY --from=builder /build/wheels /wheels
+COPY --from=builder /build/requirements_deploy.txt .
+
+# Install wheels (no compilation needed)
+RUN pip install --upgrade pip && \
+    pip install --no-cache /wheels/* && \
+    rm -rf /wheels
+
+# Copy application code
 COPY . .
 
-# Create a non-root user to run the app
+# Create non-root user
 RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
 USER appuser
 
-# Expose port 5000 (Render will map this internally)
 EXPOSE 5000
 
-# Start the application with gunicorn
 CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "2", "--timeout", "60", "wsgi:app"]
