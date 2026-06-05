@@ -5,12 +5,13 @@
 runtime = "python-3.11"
 
 # Install dependencies
-install = "pip install -r requirements_deploy.txt"
+install = "python -m pip install --upgrade pip setuptools wheel && pip install -r requirements_deploy.txt"
 
 # Start command
 start = "gunicorn wsgi:app"
 
-# Pre-deployment build (create database)
+# Pre-deployment build (upgrade build tools and create database)
 preBuild = [
+  "python -m pip install --upgrade pip setuptools wheel",
   "python -c 'from web_app import app, db; app.app_context().push(); db.create_all()'"
 ]
