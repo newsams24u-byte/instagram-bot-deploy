@@ -1,17 +1,11 @@
-# Deployment Configuration File for Render.com
-# This file tells Render how to deploy your app
-
-# Environment: Python
-runtime = "python-3.11"
-
-# Install dependencies
-install = "python -m pip install --upgrade pip setuptools wheel && pip install -r requirements_deploy.txt"
-
-# Start command
-start = "gunicorn wsgi:app"
-
-# Pre-deployment build (upgrade build tools and create database)
-preBuild = [
-  "python -m pip install --upgrade pip setuptools wheel",
-  "python -c 'from web_app import app, db; app.app_context().push(); db.create_all()'"
-]
+# Render service descriptor
+services:
+  - type: web
+    name: instagram-bot
+    env: python
+    branch: main
+    runtime: python-3.11
+    buildCommand: python -m pip install --upgrade pip setuptools wheel && pip install -r requirements_deploy.txt
+    startCommand: gunicorn wsgi:app
+    # optional: create DB tables after install
+    healthCheckPath: /
